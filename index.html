@@ -15,7 +15,16 @@
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Masuk</button>
         </form>
+        <p style="margin-top: 20px; font-size: 14px; color: #666;">
+            Belum punya akun? <a href="register.html" style="color: #4ecdc4; text-decoration: none;">Daftar di sini</a>
+        </p>
     </div>
     <script src="script.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            window.location.href = 'dashboard.html';
+        });
+    </script>
 </body>
 </html>
