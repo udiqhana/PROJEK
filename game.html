@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Simpel - Klik Partikel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+    <div class="game-container">
+        <h2>Game Klik Partikel</h2>
+        <p id="score">Skor: 0</p>
+        <p id="timer">Waktu: 30s</p>
+        <button id="startBtn">Mulai Game</button>
+        <button id="backBtn" onclick="window.location.href='dashboard.html'">Kembali</button>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let gameRunning = false;
+        let timerInterval;
 
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+
+        startBtn.addEventListener('click', () => {
+            if (!gameRunning) {
+                gameRunning = true;
+                score = 0;
+                timeLeft = 30;
+                scoreEl.textContent = 'Skor: 0';
+                timerEl.textContent = 'Waktu: 30s';
+                startBtn.textContent = 'Game Berjalan...';
+                startBtn.disabled = true;
+
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    timerEl.textContent = `Waktu: ${timeLeft}s`;
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+
+                canvas.addEventListener('click', clickParticle);
+            }
+        });
+
+        function clickParticle(event) {
+            if (!gameRunning) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            particles.forEach((particle, index) => {
+                const dist = Math.sqrt((x - particle.x) ** 2 + (y - particle.y) ** 2);
+                if (dist < particle.size + 10) {
+                    score += 10;
+                    scoreEl.textContent = `Skor: ${score}`;
+                    particles.splice(index, 1);
+                    particles.push(new Particle());
+                }
+            });
+        }
+
+        function endGame() {
+            gameRunning = false;
+            clearInterval(timerInterval);
+            startBtn.textContent = 'Mulai Game';
+            startBtn.disabled = false;
+            canvas.removeEventListener('click', clickParticle);
+            alert(`Game Selesai! Skor: ${score}. Coba lagi?`);
+        }
+    </script>
+</body>
+</html>
