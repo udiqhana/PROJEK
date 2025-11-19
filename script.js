@@ -1,4 +1,3 @@
-// Efek partikel untuk kreativitas tambahan
 const canvas = document.getElementById('particleCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -51,7 +50,6 @@ function animateParticles() {
 initParticles();
 animateParticles();
 
-// Responsif untuk resize
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
