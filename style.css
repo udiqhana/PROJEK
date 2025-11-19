@@ -123,3 +123,42 @@ canvas {
     line-height: 1.6;
     font-size: 14px;
 }
+
+/* Tambah ini di akhir style.css */
+.game-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 300px;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.game-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.game-container p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.game-container button {
+    margin: 10px;
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.game-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
