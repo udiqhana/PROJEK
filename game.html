@@ -114,7 +114,7 @@
             particles.forEach((particle, index) => {
                 const dist = Math.sqrt((x - particle.x) ** 2 + (y - particle.y) ** 2);
                 if (dist < particle.size) {
-                    score += 10;
+                    score += 10000000;
                     scoreEl.textContent = `Skor: ${score}`;
                     particles.splice(index, 1); // Hapus partikel
                     particles.push(new Particle()); // Tambah partikel baru
