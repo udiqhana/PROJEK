@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Simpel - Klik Partikel</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f0f0f0; }
+        canvas { border: 1px solid #000; background: #fff; display: block; margin: 0 auto; }
+        .game-container { margin-top: 20px; }
+        button { padding: 10px 20px; font-size: 16px; margin: 10px; }
+    </style>
 </head>
 <body>
-    <canvas id="particleCanvas"></canvas>
+    <canvas id="particleCanvas" width="600" height="400"></canvas>
     <div class="game-container">
         <h2>Game Klik Partikel</h2>
         <p id="score">Skor: 0</p>
@@ -15,27 +20,74 @@
         <button id="startBtn">Mulai Game</button>
         <button id="backBtn" onclick="window.location.href='dashboard.html'">Kembali</button>
     </div>
-    <script src="script.js"></script>
     <script>
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+
+        let particles = [];
         let score = 0;
         let timeLeft = 30;
         let gameRunning = false;
         let timerInterval;
+        let animationId;
 
-        const scoreEl = document.getElementById('score');
-        const timerEl = document.getElementById('timer');
-        const startBtn = document.getElementById('startBtn');
-        const canvas = document.getElementById('particleCanvas');
+        // Kelas Partikel
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 10; // Ukuran 10-30
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`; // Warna acak
+                this.speedX = (Math.random() - 0.5) * 2; // Gerak acak
+                this.speedY = (Math.random() - 0.5) * 2;
+            }
 
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                // Bounce di tepi canvas
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.stroke();
+            }
+        }
+
+        // Fungsi animasi
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            if (gameRunning) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // Mulai game
         startBtn.addEventListener('click', () => {
-            console.log('Tombol Mulai diklik'); // Debug log
             if (!gameRunning) {
                 gameRunning = true;
                 score = 0;
                 timeLeft = 30;
+                particles = []; // Reset partikel
+                for (let i = 0; i < 10; i++) { // Mulai dengan 10 partikel
+                    particles.push(new Particle());
+                }
                 scoreEl.textContent = 'Skor: 0';
                 timerEl.textContent = 'Waktu: 30s';
-                startBtn.style.display = 'none'; // Hilangkan tombol
+                startBtn.style.display = 'none';
                 canvas.style.pointerEvents = 'auto';
 
                 timerInterval = setInterval(() => {
@@ -47,37 +99,37 @@
                 }, 1000);
 
                 canvas.addEventListener('click', clickParticle);
-                console.log('Game dimulai'); // Debug log
+                animate(); // Mulai animasi
             }
         });
 
+        // Klik partikel
         function clickParticle(event) {
             if (!gameRunning) return;
-            console.log('Klik canvas terdeteksi'); // Debug log
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
 
             particles.forEach((particle, index) => {
                 const dist = Math.sqrt((x - particle.x) ** 2 + (y - particle.y) ** 2);
-                if (dist < particle.size + 10) {
+                if (dist < particle.size) {
                     score += 10;
                     scoreEl.textContent = `Skor: ${score}`;
-                    particles.splice(index, 1);
-                    particles.push(new Particle());
-                    console.log('Partikel diklik, skor: ' + score); // Debug log
+                    particles.splice(index, 1); // Hapus partikel
+                    particles.push(new Particle()); // Tambah partikel baru
                 }
             });
         }
 
+        // Akhiri game
         function endGame() {
             gameRunning = false;
             clearInterval(timerInterval);
-            startBtn.style.display = 'inline-block'; // Tampilkan tombol lagi
+            cancelAnimationFrame(animationId);
+            startBtn.style.display = 'inline-block';
             canvas.style.pointerEvents = 'none';
             canvas.removeEventListener('click', clickParticle);
             alert(`Game Selesai! Skor: ${score}. Coba lagi?`);
-            console.log('Game selesai'); // Debug log
         }
     </script>
 </body>
