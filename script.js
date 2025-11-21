@@ -19,8 +19,8 @@ class Particle {
     update() {
         this.x += this.speedX;
         this.y += this.speedY;
-        if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-        if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+        if (this.x > canvas.width || this.x < 0) this.speedX *= 1;
+        if (this.y > canvas.height || this.y < 0) this.speedY *= 1;
     }
 
     draw() {
