@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">  <!-- Kembalikan link ke style.css -->
 </head>
 <body>
-    <canvas id="particleCanvas" width="1500" height="1500"></canvas>
+    <canvas id="particleCanvas" width="1350" height="1500"></canvas>
     <div class="game-container">
         <h2>Game Klik Partikel</h2>
         <p id="score">Skor: 0</p>
@@ -93,7 +93,7 @@
                 score = 0;
                 timeLeft = 30;
                 particles = []; // Reset partikel
-                for (let i = 0; i < 50; i++) { // Mulai dengan 50 partikel
+                for (let i = 0; i < 30; i++) { // Mulai dengan 30 partikel
                     particles.push(new Particle());
                 }
                 scoreEl.textContent = 'Skor: 0';
