@@ -42,16 +42,21 @@
                 this.y = Math.random() * canvas.height;
                 this.size = Math.random() * 20 + 10; // Ukuran 10-30
                 this.color = `hsl(${Math.random() * 360}, 100%, 50%)`; // Warna acak
-                this.speedX = (Math.random() - 0.5) * 1; // Gerak acak
-                this.speedY = (Math.random() - 0.5) * 1;
+                this.speedX = (Math.random() - 0.5) * 4; // Kecepatan acak, ditingkatkan untuk gerakan lebih terlihat
+                this.speedY = (Math.random() - 0.5) * 4;
             }
 
             update() {
-                this.x *= this.speedX;
-                this.y *= this.speedY;
-                // Bounce di tepi canvas
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= 1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= 1;
+                this.x += this.speedX; // Perbaikan: tambah kecepatan ke posisi, bukan kalikan
+                this.y += this.speedY;
+                // Bounce di tepi canvas dengan membalik arah
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                // Pastikan partikel tetap di dalam canvas setelah bounce
+                if (this.x < 0) this.x = 0;
+                if (this.x > canvas.width) this.x = canvas.width;
+                if (this.y < 0) this.y = 0;
+                if (this.y > canvas.height) this.y = canvas.height;
             }
 
             draw() {
