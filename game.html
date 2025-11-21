@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">  <!-- Kembalikan link ke style.css -->
 </head>
 <body>
-    <canvas id="particleCanvas" width="2000" height="1500"></canvas>
+    <canvas id="particleCanvas" width="1500" height="1200"></canvas>
     <div class="game-container">
         <h2>Game Klik Partikel</h2>
         <p id="score">Skor: 0</p>
@@ -34,6 +34,7 @@
         let gameRunning = false;
         let timerInterval;
         let animationId;
+        let lastTime = 0; // Untuk delta time
 
         // Kelas Partikel
         class Particle {
@@ -46,9 +47,10 @@
                 this.speedY = (Math.random() - 0.5) * 4;
             }
 
-            update() {
-                this.x += this.speedX; // Perbaikan: tambah kecepatan ke posisi, bukan kalikan
-                this.y += this.speedY;
+            update(deltatime) {
+               // Gunakan deltaTime untuk gerakan konsisten, tidak tergantung FPS
+                this.x += this.speedX * deltaTime * 60; // Asumsikan 60 FPS sebagai basis
+                this.y += this.speedY * deltaTime * 60;
                 // Bounce di tepi canvas dengan membalik arah
                 if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
                 if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
@@ -69,8 +71,11 @@
             }
         }
 
-        // Fungsi animasi
-        function animate() {
+            // Fungsi animasi dengan delta time
+        function animate(currentTime) {
+            const deltaTime = (currentTime - lastTime) / 1000; // Delta time dalam detik
+            lastTime = currentTime;
+            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(particle => {
                 particle.update();
@@ -88,7 +93,7 @@
                 score = 0;
                 timeLeft = 30;
                 particles = []; // Reset partikel
-                for (let i = 0; i < 50; i++) { // Mulai dengan 50 partikel
+                for (let i = 0; i < 30; i++) { // Mulai dengan 50 partikel
                     particles.push(new Particle());
                 }
                 scoreEl.textContent = 'Skor: 0';
