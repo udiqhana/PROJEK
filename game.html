@@ -48,7 +48,8 @@
             }
 
             update(deltaTime) {
-                // Gunakan deltaTime untuk gerakan konsisten, tidak tergantung FPS
+              // Clamp deltaTime untuk menghindari loncatan besar jika FPS drop drastis
+                const clampedDelta = Math.min(deltaTime, 1 / 30); // Maksimal 30 FPS sebagai batas bawah
                 this.x += this.speedX * deltaTime * 60; // Asumsikan 60 FPS sebagai basis
                 this.y += this.speedY * deltaTime * 60;
                 // Bounce di tepi canvas dengan membalik arah
