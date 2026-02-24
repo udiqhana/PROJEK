@@ -5,54 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Simpel - Klik Partikel</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* CSS tambahan untuk end screen */
-        .game-container, .end-screen {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-        .end-screen {
-            display: none;
-            background: rgba(0,0,0,0.9);
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-        }
-        canvas { 
-            cursor: crosshair; 
-            display: block;
-            background: linear-gradient(45deg, #1a1a2e, #16213e);
-        }
-    </style>
 </head>
 <body>
     <canvas id="particleCanvas" width="1920" height="950"></canvas>
-    
-    <div class="game-container" id="gameContainer">
+    <div class="game-container">
         <h2>Game Klik Partikel</h2>
         <p id="score">Skor: 0</p>
         <p id="timer">Waktu: 30s</p>
         <button id="startBtn">Mulai Game</button>
         <button id="backBtn" onclick="window.location.href='dashboard.html'">Kembali</button>
     </div>
-    
     <div class="end-screen" id="endScreen">
         <h2>Game Selesai!</h2>
-        <p id="finalScore">Skor Akhir: 0</p>
+        <p id="finalScore">Skor: 0</p>
         <button id="restartBtn">Main Lagi</button>
         <button id="backBtnEnd" onclick="window.location.href='dashboard.html'">Kembali</button>
     </div>
-
     <script>
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('score');
         const timerEl = document.getElementById('timer');
         const startBtn = document.getElementById('startBtn');
-        const gameContainer = document.getElementById('gameContainer');
         const endScreen = document.getElementById('endScreen');
         const finalScoreEl = document.getElementById('finalScore');
         const restartBtn = document.getElementById('restartBtn');
@@ -65,7 +39,7 @@
         let animationId;
         let lastTime = 0;
 
-        // Kelas Partikel (tetap sama)
+        // Kelas Partikel (sama persis)
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
@@ -78,12 +52,10 @@
 
             update(deltaTime) {
                 const clampedDelta = Math.min(deltaTime, 1 / 30);
-                this.x += this.speedX * clampedDelta * 60;
-                this.y += this.speedY * clampedDelta * 60;
-                
+                this.x += this.speedX * deltaTime * 60;
+                this.y += this.speedY * deltaTime * 60;
                 if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
                 if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-                
                 if (this.x < 0) this.x = 0;
                 if (this.x > canvas.width) this.x = canvas.width;
                 if (this.y < 0) this.y = 0;
@@ -96,7 +68,6 @@
                 ctx.fillStyle = this.color;
                 ctx.fill();
                 ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
                 ctx.stroke();
             }
         }
@@ -110,42 +81,38 @@
                 particle.update(deltaTime);
                 particle.draw();
             });
-            
             if (gameRunning) {
                 animationId = requestAnimationFrame(animate);
             }
         }
 
-        // Mulai game
-        startBtn.addEventListener('click', startGame);
-
-        function startGame() {
-            gameRunning = true;
-            score = 0;
-            timeLeft = 30;
-            particles = [];
-            
-            for (let i = 0; i < 30; i++) {
-                particles.push(new Particle());
-            }
-            
-            scoreEl.textContent = 'Skor: 0';
-            timerEl.textContent = 'Waktu: 30s';
-            gameContainer.style.display = 'none'; // Sembunyikan UI game
-            canvas.style.pointerEvents = 'auto';
-            lastTime = performance.now();
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerEl.textContent = `Waktu: ${timeLeft}s`;
-                if (timeLeft <= 0) {
-                    endGame();
+        startBtn.addEventListener('click', () => {
+            if (!gameRunning) {
+                gameRunning = true;
+                score = 0;
+                timeLeft = 30;
+                particles = [];
+                for (let i = 0; i < 30; i++) {
+                    particles.push(new Particle());
                 }
-            }, 1000);
+                scoreEl.textContent = 'Skor: 0';
+                timerEl.textContent = 'Waktu: 30s';
+                startBtn.style.display = 'none';
+                canvas.style.pointerEvents = 'auto';
+                lastTime = performance.now();
 
-            canvas.addEventListener('click', clickParticle);
-            animate(performance.now());
-        }
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    timerEl.textContent = `Waktu: ${timeLeft}s`;
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+
+                canvas.addEventListener('click', clickParticle);
+                animate(performance.now());
+            }
+        });
 
         function clickParticle(event) {
             if (!gameRunning) return;
@@ -153,37 +120,35 @@
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
 
-            for (let i = particles.length - 1; i >= 0; i--) { // Loop mundur untuk splice aman
-                const particle = particles[i];
+            particles.forEach((particle, index) => {
                 const dist = Math.sqrt((x - particle.x) ** 2 + (y - particle.y) ** 2);
                 if (dist < particle.size) {
                     score += 1000;
                     scoreEl.textContent = `Skor: ${score}`;
-                    particles.splice(i, 1);
+                    particles.splice(index, 1);
                     particles.push(new Particle());
-                    break; // Hanya 1 partikel per klik
                 }
-            }
+            });
         }
 
-        // Akhiri game TANPA POPUP
+        // *** INI YANG DIUBAH - GANTI ALERT DENGAN END SCREEN ***
         function endGame() {
             gameRunning = false;
             clearInterval(timerInterval);
             cancelAnimationFrame(animationId);
+            startBtn.style.display = 'inline-block';
             canvas.style.pointerEvents = 'none';
             canvas.removeEventListener('click', clickParticle);
             
-            // Tampilkan end screen
-            finalScoreEl.textContent = `Skor Akhir: ${score}`;
+            // Tampilkan end screen alih-alih alert
+            finalScoreEl.textContent = `Skor: ${score}`;
             endScreen.style.display = 'block';
         }
 
-        // Restart game
+        // Restart dari end screen
         restartBtn.addEventListener('click', () => {
             endScreen.style.display = 'none';
             startBtn.style.display = 'inline-block';
-            gameContainer.style.display = 'block';
         });
     </script>
 </body>
