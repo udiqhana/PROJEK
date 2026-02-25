@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="particleCanvas" width="400" height="800"
+    <canvas id="particleCanvas" width="375" height="750"
         "></canvas>
     <div class="game-container">
         <h2>Game Klik Partikel</h2>
         <p id="score">Skor: 0</p>
         <p id="timer">Waktu: 30s</p>
         <button id="startBtn">Mulai Game</button>
-        <button id="backBtn" onclick="window.location.href='dashboard.html'">Kembali</button>
     </div>
     <div class="end-screen" id="endScreen">
         <h2>Game Selesai!</h2>
@@ -124,7 +123,7 @@
             particles.forEach((particle, index) => {
                 const dist = Math.sqrt((x - particle.x) ** 2 + (y - particle.y) ** 2);
                 if (dist < particle.size) {
-                    score += 1000;
+                    score += 100;
                     scoreEl.textContent = `Skor: ${score}`;
                     particles.splice(index, 1);
                     particles.push(new Particle());
