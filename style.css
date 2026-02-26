@@ -124,44 +124,53 @@ canvas {
     font-size: 14px;
 }
 
-/* Tambah ini di akhir style.css */
-.game-container {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    width: 300px;
-    position: relative;
+/* --- UI Scores di Pojok Kanan Atas --- */
+.ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
     z-index: 10;
-    animation: fadeIn 1s ease-in-out;
 }
 
-.game-container h2 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.game-container p {
-    font-size: 18px;
-    margin: 10px 0;
-}
-
-.game-container button {
-    margin: 10px;
+.score-box {
+    background: white;
     padding: 10px 20px;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 2px solid #333;
 }
 
-.game-container button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+/* --- Styling Popup Akhir (Wow!) --- */
+.end-screen {
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 30;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
 }
+
+.end-screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 canvas {
     position: absolute;
     top: 0;
