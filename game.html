@@ -7,13 +7,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="particleCanvas" width="375" height="750"
-        "></canvas>
+    <!-- UI Layer (Pojok Kanan Atas) -->
+    <div class="ui-layer">
+        <div class="score-box" id="timer">30s</div>
+        <div class="score-box">Skor: <span id="score">0</span></div>
+    </div>
+
+    <canvas id="particleCanvas" width="375" height="750"></canvas>
+
+    <!-- Tombol Mulai (Overlay di tengah) -->
+    <div id="startOverlay" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:20;">
+        <h2>Game Klik Partikel</h2>
+        <button id="startBtn">Mulai Game</button>
+    </div>
+
+    <!-- Popup Akhir -->
     <div class="end-screen" id="endScreen">
-        <h2>Game Selesai!</h2>
-        <p id="finalScore">Skor: 0</p>
+        <h2>Game Selesai! 🎉</h2>
+        <p style="font-size:1.5rem; font-weight:bold;">Skor Akhir: <span id="finalScore">0</span></p>
         <button id="restartBtn">Main Lagi</button>
-        <button id="backBtnEnd" onclick="window.location.href='dashboard.html'">Kembali</button>
+        <button onclick="window.location.href='dashboard.html'">Kembali</button>
     </div>
     <script>
         const canvas = document.getElementById('particleCanvas');
