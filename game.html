@@ -3,153 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Simpel - Klik Partikel</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Neon Particle Clicker</title>
+    <!-- Mengambil Font Poppins untuk tampilan modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #FF6584;
+            --bg: #0f172a;
+            --glass: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Container Utama Game */
+        .game-wrapper {
+            position: relative;
+            width: 375px; /* Lebar mobile */
+            height: 750px; /* Tinggi mobile */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        /* --- UI: Timer (Kiri Atas) & Score (Kanan Atas) --- */
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none; /* Agar klik tembus ke canvas */
+            z-index: 10;
+        }
+
+        .timer-box, .score-box {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .score-box {
+            color: #4ade80; /* Warna hijau segar untuk skor */
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        /* --- Layar Start & End (Overlay) --- */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 20;
+            transition: opacity 0.3s ease;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        /* --- Tombol Umum --- */
+        button {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: white;
+            box-shadow: 0 0 20px rgba(108, 99, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(108, 99, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-top: 15px;
+            padding: 10px 30px;
+            font-size: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* --- Desain Popup Akhir (The "Wow" Factor) --- */
+        #endScreen {
+            /* Animasi Masuk */
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .score-display-big {
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 20px 0;
+            color: white;
+            text-shadow: 0 0 20px var(--primary);
+        }
+        
+        .label-score {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.7;
+        }
+
+    </style>
 </head>
 <body>
-    <canvas id="particleCanvas" width="375" height="750"
-        "></canvas>
-    <div class="game-container">
-        <h2>Game Klik Partikel</h2>
-        <p id="score">Skor: 0</p>
-        <p id="timer">Waktu: 30s</p>
-        <button id="startBtn">Mulai Game</button>
-    </div>
-    <div class="end-screen" id="endScreen">
-        <h2>Game Selesai!</h2>
-        <p id="finalScore">Skor: 0</p>
-        <button id="restartBtn">Main Lagi</button>
-        <button id="backBtnEnd" onclick="window.location.href='dashboard.html'">Kembali</button>
-    </div>
-    <script>
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreEl = document.getElementById('score');
-        const timerEl = document.getElementById('timer');
-        const startBtn = document.getElementById('startBtn');
-        const endScreen = document.getElementById('endScreen');
-        const finalScoreEl = document.getElementById('finalScore');
-        const restartBtn = document.getElementById('restartBtn');
 
-        let particles = [];
-        let score = 0;
-        let timeLeft = 30;
-        let gameRunning = false;
-        let timerInterval;
-        let animationId;
-        let lastTime = 0;
+    <div class="game-wrapper">
+        <!-- UI Layer (Selalu di atas canvas tapi di bawah popup) -->
+        <div class="ui-layer">
+            <div class="timer-box">⏱️ <span id="timer">30</span>s</div>
+            <!-- Skor Di pojok kanan atas sesuai request -->
+            <div class="score-box">Skor: <span id="score">0</span></div>
+        </div>
 
-        // Kelas Partikel (sama persis)
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 20 + 10;
-                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                this.speedX = (Math.random() - 0.5) * 4;
-                this.speedY = (Math.random() - 0.5) * 4;
-            }
+        <canvas id="particleCanvas" width="375" height="750"></canvas>
 
-            update(deltaTime) {
-                const clampedDelta = Math.min(deltaTime, 1 / 30);
-                this.x += this.speedX * deltaTime * 60;
-                this.y += this.speedY * deltaTime * 60;
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-                if (this.x < 0) this.x = 0;
-                if (this.x > canvas.width) this.x = canvas.width;
-                if (this.y < 0) this.y = 0;
-                if (this.y > canvas.height) this.y = canvas.height;
-            }
+        <!-- Layar Mulai -->
+        <div id="startScreen" class="overlay">
+            <h1>Neon Clicker</h1>
+            <p class="subtitle">Klik partikel warna-warni secepat mungkin!</p>
+            <button id="startBtn" class="btn-primary">Mulai Game</button>
+        </div>
 
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-                ctx.strokeStyle = '#000';
-                ctx.stroke();
-            }
-        }
-
-        function animate(currentTime) {
-            const deltaTime = (currentTime - lastTime) / 1000;
-            lastTime = currentTime;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(particle => {
-                particle.update(deltaTime);
-                particle.draw();
-            });
-            if (gameRunning) {
-                animationId = requestAnimationFrame(animate);
-            }
-        }
-
-        startBtn.addEventListener('click', () => {
-            if (!gameRunning) {
-                gameRunning = true;
-                score = 0;
-                timeLeft = 30;
-                particles = [];
-                for (let i = 0; i < 30; i++) {
-                    particles.push(new Particle());
-                }
-                scoreEl.textContent = 'Skor: 0';
-                timerEl.textContent = 'Waktu: 30s';
-                startBtn.style.display = 'none';
-                canvas.style.pointerEvents = 'auto';
-                lastTime = performance.now();
-
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    timerEl.textContent = `Waktu: ${timeLeft}s`;
-                    if (timeLeft <= 0) {
-                        endGame();
-                    }
-                }, 1000);
-
-                canvas.addEventListener('click', clickParticle);
-                animate(performance.now());
-            }
-        });
-
-        function clickParticle(event) {
-            if (!gameRunning) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-
-            particles.forEach((particle, index) => {
-                const dist = Math.sqrt((x - particle.x) ** 2 + (y - particle.y) ** 2);
-                if (dist < particle.size) {
-                    score += 100;
-                    scoreEl.textContent = `Skor: ${score}`;
-                    particles.splice(index, 1);
-                    particles.push(new Particle());
-                }
-            });
-        }
-
-        // *** INI YANG DIUBAH - GANTI ALERT DENGAN END SCREEN ***
-        function endGame() {
-            gameRunning = false;
-            clearInterval(timerInterval);
-            cancelAnimationFrame(animationId);
-            startBtn.style.display = 'inline-block';
-            canvas.style.pointerEvents = 'none';
-            canvas.removeEventListener('click', clickParticle);
+        <!-- Layar Selesai (Popup Keren) -->
+        <div id="endScreen" class="overlay hidden">
+            <h2>Waktu Habis!</h2>
+            <div class="label-score">Total Skor</div>
+            <div id="finalScore" class="score-display-big">0</div>
             
-            // Tampilkan end screen alih-alih alert
-            finalScoreEl.textContent = `Skor: ${score}`;
-            endScreen.style.display = 'block';
-        }
-
-        // Restart dari end screen
-        restartBtn.addEventListener('click', () => {
-            endScreen.style.display = 'none';
-            startBtn.style.display = 'inline-block';
-        });
-    </script>
-</body>
-</html>
+            <button id="restartBtn" class="btn-primary">Main Lagi</button>
+            <button id="backBtnEnd" class="btn-secondary" onclick="window.location.href='
