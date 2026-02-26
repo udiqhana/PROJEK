@@ -104,7 +104,7 @@
                 }
                 scoreEl.textContent = 'Skor: 0';
                 timerEl.textContent = 'Waktu: 30s';
-                startBtn.style.display = 'none';
+                document.getElementById('startOverlay').style.display = 'none';
                 canvas.style.pointerEvents = 'auto';
                 lastTime = performance.now();
 
@@ -138,19 +138,18 @@
             });
         }
 
-        // *** INI YANG DIUBAH - GANTI ALERT DENGAN END SCREEN ***
-        function endGame() {
-            gameRunning = false;
-            clearInterval(timerInterval);
-            cancelAnimationFrame(animationId);
-            startBtn.style.display = 'inline-block';
-            canvas.style.pointerEvents = 'none';
-            canvas.removeEventListener('click', clickParticle);
-            
-            // Tampilkan end screen alih-alih alert
-            finalScoreEl.textContent = `Skor: ${score}`;
-            endScreen.style.display = 'block';
-        }
+function endGame() {
+    gameRunning = false;
+    clearInterval(timerInterval);
+    cancelAnimationFrame(animationId);
+    
+    // Tampilkan popup kerendengan class .active
+    document.getElementById('finalScore').innerText = score;
+    document.getElementById('endScreen').classList.add('active');
+    
+    // Sembunyikan tombol start
+    document.getElementById('startOverlay').style.display = 'none';
+}
 
         // Restart dari end screen
         restartBtn.addEventListener('click', () => {
