@@ -15,19 +15,32 @@
 
     <canvas id="particleCanvas" width="375" height="750"></canvas>
 
-    <!-- Tombol Mulai (Overlay di tengah) -->
-    <div id="startOverlay" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:20;">
-        <h2>Game Klik Partikel</h2>
-        <button id="startBtn">Mulai Game</button>
-    </div>
+<!-- Tombol Mulai & Pilihan Waktu -->
+<div id="startOverlay" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:20; background:white; padding:20px; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+    <h2>Game Klik Partikel</h2>
+    <p>Pilih Waktu:</p>
+    
+    <!-- Tombol Pilihan Waktu -->
+    <button onclick="setWaktu(15)" style="margin:5px; padding:10px 20px; cursor:pointer;">15 Detik</button>
+    <button onclick="setWaktu(30)" style="margin:5px; padding:10px 20px; cursor:pointer;">30 Detik</button>
+    <button onclick="setWaktu(60)" style="margin:5px; padding:10px 20px; cursor:pointer;">60 Detik</button>
+    
+    <br><br>
+    <button id="startBtn" style="font-size:1.2rem; padding:15px 40px;">Mulai Game</button>
+</div>
 
-    <!-- Popup Akhir -->
-    <div class="end-screen" id="endScreen">
-        <h2>Game Selesai! 🎉</h2>
-        <p style="font-size:1.5rem; font-weight:bold;">Skor Akhir: <span id="finalScore">0</span></p>
-        <button id="restartBtn">Main Lagi</button>
-        <button onclick="window.location.href='dashboard.html'">Kembali</button>
-    </div>
+<!-- Popup Akhir -->
+<div class="end-screen" id="endScreen">
+    <h2>Game Selesai! 🎉</h2>
+    <p style="font-size:1.5rem; font-weight:bold;">Skor Akhir: <span id="finalScore">0</span></p>
+    
+    <!-- TOMBOL MULAI LAGI (INI YANG KAMU MINTA) -->
+    <button id="restartBtn" style="margin-top:20px; background:#28a745; color:white; border:none; padding:15px 30px; border-radius:10px; cursor:pointer; font-size:1rem;">Mulai Lagi</button>
+    
+    <br>
+    <button onclick="window.location.href='dashboard.html'" style="background:#dc3545; color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">Kembali</button>
+</div>
+    
     <script>
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
@@ -92,34 +105,44 @@
                 animationId = requestAnimationFrame(animate);
             }
         }
+        // Fungsi untuk pilih waktu
+function setWaktu(detik) {
+    waktuDipilih = detik;
+    // Opsional: Beri tahu user waktu yang dipilih
+    alert("Waktu dipilih: " + waktuDipilih + " detik");
+}
 
-        startBtn.addEventListener('click', () => {
-            if (!gameRunning) {
-                gameRunning = true;
-                score = 0;
-                timeLeft = 30;
-                particles = [];
-                for (let i = 0; i < 30; i++) {
-                    particles.push(new Particle());
-                }
-                scoreEl.textContent = 'Skor: 0';
-                timerEl.textContent = 'Waktu: 30s';
-                document.getElementById('startOverlay').style.display = 'none';
-                canvas.style.pointerEvents = 'auto';
-                lastTime = performance.now();
+startBtn.addEventListener('click', () => {
+    if (!gameRunning) {
+        gameRunning = true;
+        score = 0;
+        timeLeft = waktuDipilih; // <--- GANTI INI (bukan 30 lagi)
+        particles = [];
+        for (let i = 0; i < 30; i++) {
+            particles.push(new Particle());
+        }
+        
+        scoreEl.textContent = 'Skor: 0';
+        timerEl.textContent = 'Waktu: ' + timeLeft + 's';
+        
+        // Sembunyikan overlay start
+        document.getElementById('startOverlay').style.display = 'none';
+        
+        canvas.style.pointerEvents = 'auto';
+        lastTime = performance.now();
 
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    timerEl.textContent = `Waktu: ${timeLeft}s`;
-                    if (timeLeft <= 0) {
-                        endGame();
-                    }
-                }, 1000);
-
-                canvas.addEventListener('click', clickParticle);
-                animate(performance.now());
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = 'Waktu: ' + timeLeft + 's';
+            if (timeLeft <= 0) {
+                endGame();
             }
-        });
+        }, 1000);
+
+        canvas.addEventListener('click', clickParticle);
+        animate(performance.now());
+    }
+});
 
         function clickParticle(event) {
             if (!gameRunning) return;
