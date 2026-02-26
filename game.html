@@ -161,24 +161,35 @@ startBtn.addEventListener('click', () => {
             });
         }
 
+// --- END GAME ---
 function endGame() {
     gameRunning = false;
     clearInterval(timerInterval);
     cancelAnimationFrame(animationId);
     
-    // Tampilkan popup kerendengan class .active
+    canvas.style.pointerEvents = 'none';
+    canvas.removeEventListener('click', clickParticle);
+    
+    // Tampilkan popup akhir
     document.getElementById('finalScore').innerText = score;
     document.getElementById('endScreen').classList.add('active');
     
-    // Sembunyikan tombol start
+    // Pastikan overlay start disembunyikan dulu
     document.getElementById('startOverlay').style.display = 'none';
 }
 
-        // Restart dari end screen
-        restartBtn.addEventListener('click', () => {
-            endScreen.style.display = 'none';
-            startBtn.style.display = 'inline-block';
-        });
+// --- RESTART / MULAI LAGI ---
+restartBtn.addEventListener('click', () => {
+    // Sembunyikan popup akhir
+    document.getElementById('endScreen').classList.remove('active');
+    
+    // Tampilkan kembali menu pilih waktu
+    document.getElementById('startOverlay').style.display = 'block';
+    
+    // Reset tampilan skor dan timer
+    document.getElementById('score').innerText = '0';
+    document.getElementById('timer').innerText = waktuDipilih + 's';
+});
     </script>
 </body>
 </html>
